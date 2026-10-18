@@ -40,3 +40,46 @@ window.loadServices = async function () {
 
   return data || [];
 };
+
+
+window.registerUser = async function (email, password) {
+  const client = getSupabaseClient();
+
+  const { data, error } = await client.auth.signUp({
+    email: email.trim(),
+    password: password
+  });
+
+  if (error) throw new Error(error.message);
+  return data;
+};
+
+window.loginUser = async function (email, password) {
+  const client = getSupabaseClient();
+
+  const { data, error } = await client.auth.signInWithPassword({
+    email: email.trim(),
+    password: password
+  });
+
+  if (error) throw new Error(error.message);
+  return data;
+};
+
+window.logoutUser = async function () {
+  const client = getSupabaseClient();
+  const { error } = await client.auth.signOut();
+
+  if (error) throw new Error(error.message);
+};
+
+window.getCurrentUser = async function () {
+  const client = getSupabaseClient();
+  const { data, error } = await client.auth.getUser();
+
+  if (error && error.name !== "AuthSessionMissingError") {
+    throw new Error(error.message);
+  }
+
+  return data?.user || null;
+};
