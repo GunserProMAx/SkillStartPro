@@ -1,301 +1,296 @@
 
 <!DOCTYPE html>
 <html lang="ru">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase.js" defer></script>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SkillStart — твои навыки, твой старт</title>
-<style>
-:root {
-  --purple: #6558e8;
-  --light: #f5f4ff;
-  --dark: #202039;
-  --muted: #74758a;
-  --border: #e9e8f2;
-}
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #fafaff;
-  color: var(--dark);
-}
-button, input, select, textarea { font: inherit; }
-button { cursor: pointer; }
-.container { width: min(1120px, 92%); margin: auto; }
-header {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  background: white;
-  border-bottom: 1px solid var(--border);
-}
-.nav {
-  min-height: 72px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 15px;
-}
-.logo { font-size: 25px; font-weight: 900; }
-.logo span { color: var(--purple); }
-.navlinks { display: flex; gap: 22px; }
-.navlinks a {
-  color: #66677b;
-  text-decoration: none;
-  font-size: 14px;
-}
-.btn {
-  border: 0;
-  padding: 12px 16px;
-  border-radius: 11px;
-  font-weight: bold;
-}
-.primary { background: var(--purple); color: white; }
-.secondary { background: white; border: 1px solid var(--border); }
-.hero {
-  display: grid;
-  grid-template-columns: 1.1fr .9fr;
-  gap: 30px;
-  align-items: center;
-  padding-top: 65px;
-  padding-bottom: 45px;
-}
-.badge {
-  display: inline-block;
-  color: var(--purple);
-  background: var(--light);
-  padding: 9px 13px;
-  border-radius: 30px;
-  font-size: 12px;
-  font-weight: bold;
-}
-h1 {
-  font-size: clamp(38px, 5vw, 62px);
-  line-height: 1.06;
-  letter-spacing: -2px;
-  margin: 20px 0;
-}
-h1 span { color: var(--purple); }
-.hero p {
-  max-width: 540px;
-  color: var(--muted);
-  line-height: 1.7;
-}
-.hero-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
-.hero-art {
-  background: linear-gradient(135deg, #e9e5ff, #e7f9ef);
-  padding: 22px;
-  border-radius: 25px;
-}
-.example {
-  background: white;
-  padding: 20px;
-  border-radius: 17px;
-  margin: 10px 0 16px;
-  box-shadow: 0 10px 30px #27205210;
-}
-.example small { color: var(--muted); }
-.example h3 { line-height: 1.4; }
-.price { font-size: 22px; font-weight: 900; }
-.section { padding: 35px 0 45px; }
-.section-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 20px;
-}
-h2 { font-size: 29px; letter-spacing: -1px; margin: 0 0 8px; }
-.subtitle { color: var(--muted); font-size: 14px; margin: 0; }
-.categories {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
-}
-.category {
-  text-align: left;
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 15px;
-  padding: 16px;
-  transition: .2s;
-}
-.category:hover, .category.active {
-  border-color: var(--purple);
-  transform: translateY(-2px);
-}
-.category .emoji { font-size: 28px; margin-bottom: 12px; }
-.category b { display: block; margin-bottom: 6px; }
-.category small { color: var(--muted); }
-.toolbar { display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap; }
-.search { flex: 1; min-width: 190px; }
-.search input {
-  width: 100%;
-  padding: 13px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-}
-.toolbar select {
-  padding: 12px;
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-}
-.services {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
-}
-.card {
-  display: flex;
-  flex-direction: column;
-  background: white;
-  padding: 19px;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  transition: .2s;
-}
-.card:hover { box-shadow: 0 10px 25px #2720520d; }
-.card-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.card-icon {
-  font-size: 25px;
-  background: var(--light);
-  padding: 10px;
-  border-radius: 12px;
-}
-.tag {
-  background: #eaf9f0;
-  color: #168153;
-  padding: 6px 9px;
-  border-radius: 20px;
-  font-size: 11px;
-}
-.card h3 { font-size: 17px; line-height: 1.4; }
-.card p { color: var(--muted); font-size: 13px; line-height: 1.6; }
-.card-bottom {
-  margin-top: auto;
-  border-top: 1px solid var(--border);
-  padding-top: 14px;
-}
-.seller { color: var(--muted); font-size: 12px; margin-bottom: 10px; }
-.card-price { font-size: 20px; font-weight: 900; margin-bottom: 12px; }
-.card .btn { width: 100%; }
-.how {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
-}
-.step {
-  padding: 22px;
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-}
-.step-number { color: var(--purple); font-weight: bold; font-size: 13px; }
-.step p { color: var(--muted); line-height: 1.6; font-size: 14px; }
-.cta {
-  padding: 30px;
-  background: #242047;
-  color: white;
-  border-radius: 22px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-}
-.cta p { color: #cecae9; }
-footer {
-  padding: 30px 0;
-  margin-top: 25px;
-  border-top: 1px solid var(--border);
-  color: var(--muted);
-  font-size: 13px;
-}
-.empty { padding: 30px; color: var(--muted); grid-column: 1/-1; }
-.modal-bg {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: #17152b99;
-  z-index: 10;
-  align-items: center;
-  justify-content: center;
-  padding: 15px;
-}
-.modal-bg.open { display: flex; }
-.modal {
-  background: white;
-  padding: 25px;
-  border-radius: 20px;
-  width: min(520px, 100%);
-  max-height: 90vh;
-  overflow-y: auto;
-}
-.modal-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-.modal-head h2 { font-size: 23px; }
-.close { border: 0; background: #eeeef5; border-radius: 9px; padding: 8px 12px; }
-.field { display: block; margin-bottom: 15px; }
-.field span { display: block; font-size: 13px; font-weight: bold; margin-bottom: 7px; }
-.field input, .field select, .field textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-}
-.field textarea { min-height: 90px; resize: vertical; }
-.modal .submit { width: 100%; }
-.notice {
-  background: var(--light);
-  color: #64647b;
-  padding: 12px;
-  border-radius: 10px;
-  font-size: 12px;
-  line-height: 1.5;
-  margin: 10px 0 16px;
-}
-.toast {
-  display: none;
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #242047;
-  color: white;
-  padding: 14px 18px;
-  border-radius: 12px;
-  z-index: 20;
-  width: max-content;
-  max-width: 90%;
-  font-size: 13px;
-}
-@media(max-width: 800px) {
-  .hero { grid-template-columns: 1fr; padding-top: 40px; }
-  .categories { grid-template-columns: repeat(3, 1fr); }
-  .services { grid-template-columns: repeat(2, 1fr); }
-  .navlinks { display: none; }
-}
-@media(max-width: 540px) {
-  .categories, .services, .how { grid-template-columns: 1fr; }
-  .hero { padding-top: 30px; }
-  h1 { font-size: 42px; }
-  .section-head { align-items: flex-start; flex-direction: column; }
-  .cta { align-items: flex-start; flex-direction: column; }
-  .navactions .secondary { display: none; }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillStart — твои навыки, твой старт</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js" defer></script>
+
+  <style>
+    :root {
+      --purple: #6558e8;
+      --light: #f5f4ff;
+      --dark: #202039;
+      --muted: #74758a;
+      --border: #e9e8f2;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #fafaff;
+      color: var(--dark);
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .container { width: min(1120px, 92%); margin: auto; }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: white;
+      border-bottom: 1px solid var(--border);
+    }
+    .nav {
+      min-height: 72px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+    .logo { font-size: 25px; font-weight: 900; }
+    .logo span, h1 span { color: var(--purple); }
+    .navlinks { display: flex; gap: 22px; }
+    .navlinks a {
+      color: #66677b;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .btn {
+      border: 0;
+      padding: 12px 16px;
+      border-radius: 11px;
+      font-weight: bold;
+    }
+    .primary { background: var(--purple); color: white; }
+    .secondary { background: white; border: 1px solid var(--border); }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 30px;
+      align-items: center;
+      padding: 60px 0 45px;
+    }
+    .badge {
+      display: inline-block;
+      color: var(--purple);
+      background: var(--light);
+      padding: 9px 13px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    h1 {
+      font-size: clamp(38px, 5vw, 62px);
+      line-height: 1.06;
+      letter-spacing: -2px;
+      margin: 20px 0;
+    }
+    .hero p { color: var(--muted); line-height: 1.7; }
+    .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+    .hero-art {
+      background: linear-gradient(135deg, #e9e5ff, #e7f9ef);
+      padding: 22px;
+      border-radius: 25px;
+    }
+    .example {
+      background: white;
+      padding: 20px;
+      border-radius: 17px;
+      margin: 10px 0 16px;
+    }
+    .example small { color: var(--muted); }
+    .price { font-size: 22px; font-weight: 900; }
+
+    .section { padding: 35px 0 45px; }
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    h2 { font-size: 29px; letter-spacing: -1px; margin: 0 0 8px; }
+    .subtitle { color: var(--muted); font-size: 14px; margin: 0; }
+
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+    }
+    .category {
+      text-align: left;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 16px;
+    }
+    .category:hover, .category.active { border-color: var(--purple); }
+    .emoji { font-size: 28px; margin-bottom: 12px; }
+    .category b { display: block; margin-bottom: 6px; }
+    .category small { color: var(--muted); }
+
+    .toolbar { display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap; }
+    .search { flex: 1; min-width: 190px; }
+    .search input, .toolbar select {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: white;
+    }
+    .toolbar select { width: auto; }
+
+    .services {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+    }
+    .card {
+      display: flex;
+      flex-direction: column;
+      background: white;
+      padding: 19px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-icon {
+      font-size: 25px;
+      background: var(--light);
+      padding: 10px;
+      border-radius: 12px;
+    }
+    .tag {
+      background: #eaf9f0;
+      color: #168153;
+      padding: 6px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+    }
+    .card h3 { font-size: 17px; line-height: 1.4; }
+    .card p { color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .card-bottom {
+      margin-top: auto;
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+    }
+    .seller { color: var(--muted); font-size: 12px; margin-bottom: 10px; }
+    .card-price { font-size: 20px; font-weight: 900; margin-bottom: 12px; }
+    .card .btn { width: 100%; }
+    .empty { padding: 30px; color: var(--muted); grid-column: 1/-1; }
+
+    .how {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+    }
+    .step {
+      padding: 22px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+    .step-number { color: var(--purple); font-weight: bold; font-size: 13px; }
+    .step p { color: var(--muted); line-height: 1.6; font-size: 14px; }
+
+    .cta {
+      padding: 30px;
+      background: #242047;
+      color: white;
+      border-radius: 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+    .cta p { color: #cecae9; }
+    footer {
+      padding: 30px 0;
+      margin-top: 25px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #17152b99;
+      z-index: 10;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+    }
+    .modal-bg.open { display: flex; }
+    .modal {
+      background: white;
+      padding: 25px;
+      border-radius: 20px;
+      width: min(520px, 100%);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .modal-head h2 { font-size: 23px; }
+    .close { border: 0; background: #eeeef5; border-radius: 9px; padding: 8px 12px; }
+    .field { display: block; margin-bottom: 15px; }
+    .field span { display: block; font-size: 13px; font-weight: bold; margin-bottom: 7px; }
+    .field input, .field select, .field textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    .field textarea { min-height: 90px; resize: vertical; }
+    .modal .submit { width: 100%; }
+    .notice {
+      background: var(--light);
+      color: #64647b;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      line-height: 1.5;
+      margin: 10px 0 16px;
+    }
+    .toast {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #242047;
+      color: white;
+      padding: 14px 18px;
+      border-radius: 12px;
+      z-index: 20;
+      width: max-content;
+      max-width: 90%;
+      font-size: 13px;
+    }
+
+    @media(max-width: 800px) {
+      .hero { grid-template-columns: 1fr; padding-top: 40px; }
+      .categories { grid-template-columns: repeat(3, 1fr); }
+      .services { grid-template-columns: repeat(2, 1fr); }
+      .navlinks { display: none; }
+    }
+    @media(max-width: 540px) {
+      .categories, .services, .how { grid-template-columns: 1fr; }
+      h1 { font-size: 42px; }
+      .section-head { align-items: flex-start; flex-direction: column; }
+      .cta { align-items: flex-start; flex-direction: column; }
+      .navactions .secondary { display: none; }
+    }
+  </style>
 </head>
 <body>
 
@@ -318,7 +313,7 @@ footer {
   <div>
     <div class="badge">✦ ПЕРВЫЕ НАВЫКИ. ПЕРВЫЕ ЗАКАЗЫ.</div>
     <h1>Твои навыки —<br><span>твой первый доход.</span></h1>
-    <p>Находи исполнителей для своих проектов или предлагай свои навыки. Презентации, дизайн, монтаж и цифровые услуги — в одном месте.</p>
+    <p>Находи исполнителей или предлагай свои навыки. Презентации, дизайн, монтаж и цифровые услуги — в одном месте.</p>
     <div class="hero-actions">
       <button class="btn primary" onclick="goToServices()">Найти услугу →</button>
       <button class="btn secondary" onclick="openModal('service')">Предложить услугу</button>
@@ -371,7 +366,7 @@ footer {
     <div class="section-head">
       <div>
         <h2>Каталог услуг</h2>
-        <p class="subtitle">Цены примерные, исполнитель может менять стоимость.</p>
+        <p class="subtitle">Доступные цены для первых проектов.</p>
       </div>
       <button class="btn primary" onclick="openModal('service')">＋ Добавить услугу</button>
     </div>
@@ -393,6 +388,7 @@ footer {
         <option value="desc">Сначала дороже</option>
       </select>
     </div>
+    <div id="loading" class="subtitle" role="status"></div>
     <div class="services" id="serviceList"></div>
   </section>
 
@@ -445,7 +441,7 @@ footer {
   <div class="modal">
     <div class="modal-head">
       <h2 id="modalTitle">Создать заказ</h2>
-      <button class="close" onclick="closeModal()">✕</button>
+      <button class="close" type="button" onclick="closeModal()">✕</button>
     </div>
     <form id="modalForm" onsubmit="submitForm(event)">
       <div id="modalFields"></div>
@@ -453,27 +449,27 @@ footer {
     </form>
   </div>
 </div>
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status"></div>
 
 <script>
-const services = [
-  {id:1,category:"Презентации",icon:"📊",title:"Оформление презентации до 5 слайдов",description:"Аккуратный стиль, цвета и иллюстрации. Содержание предоставляет заказчик.",price:200,seller:"Аня",tag:"Недорого"},
-  {id:2,category:"Доклады",icon:"📝",title:"Оформление готового доклада",description:"Заголовки, структура и аккуратное оформление документа.",price:150,seller:"Максим",tag:"Бюджетно"},
-  {id:3,category:"Дизайн",icon:"🎨",title:"Простой постер или афиша",description:"Один макет для события, кружка или личного проекта.",price:200,seller:"Саша",tag:"Популярное"},
-  {id:4,category:"Монтаж",icon:"🎬",title:"Монтаж короткого видео",description:"Простая нарезка и титры для ролика до 30 секунд.",price:300,seller:"Даня",tag:"Новинка"},
-  {id:5,category:"Разработка",icon:"💻",title:"Простая страница сайта",description:"Одностраничный сайт для проекта или портфолио.",price:700,seller:"Илья",tag:"Для проектов"},
-  {id:6,category:"Презентации",icon:"✨",title:"Обновление дизайна слайдов",description:"Единые шрифты, цвета и отступы для готовой презентации.",price:250,seller:"Маша",tag:"Доступно"},
-  {id:7,category:"Дизайн",icon:"🖼️",title:"Обложка для видео или проекта",description:"Простая обложка в согласованных цветах и размере.",price:150,seller:"Лёша",tag:"Бюджетно"},
-  {id:8,category:"Доклады",icon:"🔍",title:"Подбор источников для проекта",description:"Список подходящих открытых источников с краткими описаниями.",price:100,seller:"Полина",tag:"Бюджетно"},
-  {id:9,category:"Монтаж",icon:"📱",title:"Добавлю субтитры к видео",description:"Аккуратные субтитры для готового ролика до одной минуты.",price:200,seller:"Кирилл",tag:"Новинка"}
+const demoServices = [
+  {id:"demo-1",category:"Презентации",icon:"📊",title:"Оформление презентации до 5 слайдов",description:"Аккуратный стиль, цвета и иллюстрации. Содержание предоставляет заказчик.",price:200,seller:"Аня",tag:"Недорого"},
+  {id:"demo-2",category:"Доклады",icon:"📝",title:"Оформление готового доклада",description:"Заголовки, структура и аккуратное оформление документа.",price:150,seller:"Максим",tag:"Бюджетно"},
+  {id:"demo-3",category:"Дизайн",icon:"🎨",title:"Простой постер или афиша",description:"Один макет для события, кружка или личного проекта.",price:200,seller:"Саша",tag:"Популярное"},
+  {id:"demo-4",category:"Монтаж",icon:"🎬",title:"Монтаж короткого видео",description:"Простая нарезка и титры для ролика до 30 секунд.",price:300,seller:"Даня",tag:"Новинка"},
+  {id:"demo-5",category:"Разработка",icon:"💻",title:"Простая страница сайта",description:"Одностраничный сайт для проекта или портфолио.",price:700,seller:"Илья",tag:"Для проектов"},
+  {id:"demo-6",category:"Презентации",icon:"✨",title:"Обновление дизайна слайдов",description:"Единые шрифты, цвета и отступы для готовой презентации.",price:250,seller:"Маша",tag:"Доступно"},
+  {id:"demo-7",category:"Дизайн",icon:"🖼️",title:"Обложка для видео или проекта",description:"Простая обложка в согласованных цветах и размере.",price:150,seller:"Лёша",tag:"Бюджетно"},
+  {id:"demo-8",category:"Доклады",icon:"🔍",title:"Подбор источников для проекта",description:"Список подходящих открытых источников с краткими описаниями.",price:100,seller:"Полина",tag:"Бюджетно"},
+  {id:"demo-9",category:"Монтаж",icon:"📱",title:"Добавлю субтитры к видео",description:"Аккуратные субтитры для готового ролика до одной минуты.",price:200,seller:"Кирилл",tag:"Новинка"}
 ];
 
-let nextId = 10;
+let services = [...demoServices];
 let modalMode = "order";
 let toastTimer;
 
 function safe(text) {
-  return String(text).replace(/[&<>"']/g, char => ({
+  return String(text ?? "").replace(/[&<>"']/g, char => ({
     "&":"&amp;", "<":"&lt;", ">":"&gt;",
     '"':"&quot;", "'":"&#39;"
   }[char]));
@@ -503,15 +499,15 @@ function renderServices() {
   root.innerHTML = list.map(service => `
     <article class="card">
       <div class="card-top">
-        <div class="card-icon">${service.icon}</div>
-        <span class="tag">${safe(service.tag)}</span>
+        <div class="card-icon">${safe(service.icon || "✨")}</div>
+        <span class="tag">${safe(service.tag || "Услуга")}</span>
       </div>
       <h3>${safe(service.title)}</h3>
       <p>${safe(service.description)}</p>
       <div class="card-bottom">
-        <div class="seller">Исполнитель: ${safe(service.seller)} · ${safe(service.category)}</div>
-        <div class="card-price">от ${service.price} ₽</div>
-        <button class="btn primary" onclick="requestService(${service.id})">Заказать</button>
+        <div class="seller">Исполнитель: ${safe(service.seller || "SkillStart")} · ${safe(service.category)}</div>
+        <div class="card-price">${Number(service.price).toLocaleString("ru-RU")} ₽</div>
+        <button class="btn primary" onclick="requestService('${safe(service.id)}')">Заказать</button>
       </div>
     </article>
   `).join("");
@@ -547,13 +543,13 @@ function openModal(mode) {
           <option>Дизайн</option><option>Монтаж</option><option>Разработка</option>
         </select>
       </label>
-      <label class="field"><span>Бюджет в рублях</span>
-        <input id="fPrice" type="number" min="1" max="1000000" required placeholder="200">
+      <label class="field"><span>Бюджет, ₽</span>
+        <input id="fPrice" type="number" min="1" max="100000" required placeholder="200">
       </label>
       <label class="field"><span>Описание и срок</span>
         <textarea id="fDescription" required maxlength="1000" placeholder="Опиши задачу и желаемый результат"></textarea>
       </label>
-      <div class="notice">Это демо: заказ пока не будет опубликован для других пользователей.</div>
+      <div class="notice">Демо-форма: заказ пока не публикуется для других пользователей.</div>
     `;
   } else if (mode === "service") {
     title.textContent = "Добавить услугу";
@@ -567,8 +563,8 @@ function openModal(mode) {
           <option>Дизайн</option><option>Монтаж</option><option>Разработка</option>
         </select>
       </label>
-      <label class="field"><span>Цена от, ₽</span>
-        <input id="fPrice" type="number" min="1" max="1000000" required placeholder="150">
+      <label class="field"><span>Цена, ₽</span>
+        <input id="fPrice" type="number" min="1" max="100000" required placeholder="150">
       </label>
       <label class="field"><span>Описание</span>
         <textarea id="fDescription" required maxlength="1000" placeholder="Что входит в услугу?"></textarea>
@@ -576,7 +572,7 @@ function openModal(mode) {
       <label class="field"><span>Имя или псевдоним</span>
         <input id="fSeller" required maxlength="40" placeholder="Как показывать тебя в каталоге">
       </label>
-      <div class="notice">Услуга появится в каталоге только в текущем открытом сеансе страницы.</div>
+      <div class="notice">Пока услуга добавится только в текущую открытую страницу.</div>
     `;
   } else {
     title.textContent = "Войти в SkillStart";
@@ -584,7 +580,7 @@ function openModal(mode) {
       <label class="field"><span>Email</span>
         <input id="fEmail" type="email" required placeholder="you@example.com">
       </label>
-      <div class="notice">Авторизация пока не подключена. Настоящие аккаунты добавим на следующем этапе.</div>
+      <div class="notice">Настоящая регистрация пока не подключена.</div>
     `;
   }
 
@@ -596,7 +592,9 @@ function closeModal() {
 }
 
 function requestService(id) {
-  const service = services.find(item => item.id === id);
+  const service = services.find(item => String(item.id) === String(id));
+  if (!service) return;
+
   openModal("order");
   document.getElementById("fTitle").value = service.title;
   document.getElementById("fCategory").value = service.category;
@@ -627,8 +625,11 @@ function submitForm(event) {
     };
 
     services.unshift({
-      id: nextId++, category, icon:icons[category] || "✨",
-      title, description, price, seller, tag:"Новая услуга"
+      id: "local-" + Date.now(),
+      category,
+      icon: icons[category] || "✨",
+      title, description, price, seller,
+      tag: "Новая услуга"
     });
 
     document.getElementById("search").value = "";
@@ -636,13 +637,13 @@ function submitForm(event) {
     renderServices();
     closeModal();
     goToServices();
-    showToast("Услуга добавлена в каталог!");
+    showToast("Добавлено только в текущую сессию.");
   } else if (modalMode === "order") {
     closeModal();
-    showToast("Форма заказа заполнена. Публикацию подключим позже.");
+    showToast("Это демо: заказ пока не сохранён.");
   } else {
     closeModal();
-    showToast("Регистрация появится после подключения базы данных.");
+    showToast("Регистрация пока не подключена.");
   }
 }
 
@@ -650,7 +651,56 @@ document.addEventListener("keydown", event => {
   if (event.key === "Escape") closeModal();
 });
 
+async function initCatalog() {
+  const status = document.getElementById("loading");
+
+  if (typeof window.loadServices !== "function") {
+    status.textContent = "Не удалось подключить Supabase. Проверь файл supabase.js.";
+    renderServices();
+    return;
+  }
+
+  status.textContent = "Загружаем услуги…";
+
+  try {
+    const rows = await window.loadServices();
+
+    if (Array.isArray(rows) && rows.length > 0) {
+      const icons = {
+        "Презентации":"📊",
+        "Доклады":"📝",
+        "Дизайн":"🎨",
+        "Монтаж":"🎬",
+        "Разработка":"💻"
+      };
+
+      services = rows.map(service => ({
+        id: service.id,
+        category: service.category,
+        icon: icons[service.category] || "✨",
+        title: service.title,
+        description: service.description || "",
+        price: Number(service.price),
+        seller: "Исполнитель SkillStart",
+        tag: "Из базы"
+      }));
+      status.textContent = "Услуги загружены из базы данных.";
+    } else {
+      services = [...demoServices];
+      status.textContent = "В базе пока нет услуг — показаны примеры.";
+    }
+  } catch (error) {
+    console.error("Ошибка загрузки услуг:", error);
+    services = [...demoServices];
+    status.textContent = "Не удалось загрузить базу. Показаны демонстрационные услуги.";
+  }
+
+  renderServices();
+}
+
 renderServices();
+window.addEventListener("DOMContentLoaded", initCatalog);
 </script>
 </body>
 </html>
+
