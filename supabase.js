@@ -83,3 +83,34 @@ window.getCurrentUser = async function () {
 
   return data?.user || null;
 };
+
+
+window.addService = async function (service) {
+  const client = getSupabaseClient();
+
+  const { data: userData, error: userError } =
+    await client.auth.getUser();
+
+  if (userError || !userData.user) {
+    throw new Error("Сначала войди в аккаунт.");
+  }
+
+  const { data, error } = await client
+    .from("services")
+    .insert({
+      title: service.title,
+      description: service.description,
+      category: service.category,
+      price: service.price,
+      seller_name: service.seller,
+      created_by: userData.user.id,
+      is_active: true
+    })
+    .select("id, title, description, category, price, seller_name")
+    .single();
+
+  if (error) throw new Error(error.message);
+
+  return data;
+};
+
