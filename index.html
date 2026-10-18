@@ -574,15 +574,36 @@ function openModal(mode) {
       </label>
       <div class="notice">Пока услуга добавится только в текущую открытую страницу.</div>
     `;
+  
   } else {
     title.textContent = "Войти в SkillStart";
     fields.innerHTML = `
-      <label class="field"><span>Email</span>
-        <input id="fEmail" type="email" required placeholder="you@example.com">
+      <div class="field">
+        <span>Действие</span>
+        <select id="fAuthMode">
+          <option value="login">Войти</option>
+          <option value="register">Создать аккаунт</option>
+        </select>
+      </div>
+      <label class="field">
+        <span>Email</span>
+        <input id="fEmail" type="email" required
+          maxlength="254" autocomplete="email"
+          placeholder="you@example.com">
       </label>
-      <div class="notice">Настоящая регистрация пока не подключена.</div>
+      <label class="field">
+        <span>Пароль (не менее 6 символов)</span>
+        <input id="fPassword" type="password" required
+          minlength="6" maxlength="72"
+          autocomplete="current-password"
+          placeholder="Введи пароль">
+      </label>
+      <div class="notice">
+        Используй свой email и пароль. Не сообщай пароль другим людям.
+      </div>
     `;
   }
+
 
   document.getElementById("modalBg").classList.add("open");
 }
@@ -610,46 +631,72 @@ function showToast(message) {
   toastTimer = setTimeout(() => toast.style.display = "none", 3500);
 }
 
-function submitForm(event) {
+
+async function submitForm(event) {
   event.preventDefault();
 
-  if (modalMode === "service") {
-    const title = document.getElementById("fTitle").value.trim();
-    const category = document.getElementById("fCategory").value;
-    const price = Number(document.getElementById("fPrice").value);
-    const description = document.getElementById("fDescription").value.trim();
-    const seller = document.getElementById("fSeller").value.trim();
-    const icons = {
-      "Презентации":"📊", "Доклады":"📝", "Дизайн":"🎨",
-      "Монтаж":"🎬", "Разработка":"💻"
-    };
+  const form = event.currentTarget;
+  const submitButton = form.querySelector(
+    'button[type="submit"], input[type="submit"]'
+  );
 
-    services.unshift({
-      id: "local-" + Date.now(),
-      category,
-      icon: icons[category] || "✨",
-      title, description, price, seller,
-      tag: "Новая услуга"
-    });
+  if (submitButton) submitButton.disabled = true;
 
-    document.getElementById("search").value = "";
-    document.getElementById("filter").value = "Все услуги";
-    renderServices();
-    closeModal();
-    goToServices();
-    showToast("Добавлено только в текущую сессию.");
-  } else if (modalMode === "order") {
-    closeModal();
-    showToast("Это демо: заказ пока не сохранён.");
-  } else {
-    closeModal();
-    showToast("Регистрация пока не подключена.");
+  try {
+    if (modalMode === "service") {
+      const title = document.getElementById("fTitle").value.trim();
+      const category = document.getElementById("fCategory").value;
+      const price = Number(document.getElementById("fPrice").value);
+      const description = document.getElementById("fDescription").value.trim();
+      const seller = document.getElementById("fSeller").value.trim();
+
+      if (title.length < 3 || !description || seller.length < 1 ||
+          !Number.isInteger(price) || price < 1 || price > 100000) {
+        throw new Error("Проверь название, описание, имя и цену услуги.");
+      }
+
+      if (!window.addService) {
+        throw new Error("Функция сохранения не загрузилась. Обнови страницу.");
+      }
+
+      await window.addService({
+        title, category, price, description, seller
+      });
+
+      await initCatalog();
+      document.getElementById("search").value = "";
+      document.getElementById("filter").value = "Все услуги";
+      renderServices();
+      closeModal();
+      goToServices();
+      showToast("Услуга опубликована!");
+    } else if (modalMode === "order") {
+      closeModal();
+      showToast("Заказы пока работают в демо-режиме.");
+    } else {
+      const email = document.getElementById("fEmail").value.trim();
+      const password = document.getElementById("fPassword").value;
+      const authMode = document.getElementById("fAuthMode").value;
+
+      if (authMode === "register") {
+        await window.registerUser(email, password);
+        closeModal();
+        showToast(
+          "Аккаунт создан. Если требуется подтверждение email, проверь почту."
+        );
+      } else {
+        await window.loginUser(email, password);
+        closeModal();
+        showToast("Ты вошёл в SkillStart!");
+      }
+    }
+  } catch (error) {
+    showToast(error.message || "Не удалось выполнить действие.");
+  } finally {
+    if (submitButton) submitButton.disabled = false;
   }
 }
 
-document.addEventListener("keydown", event => {
-  if (event.key === "Escape") closeModal();
-});
 
 async function initCatalog() {
   const status = document.getElementById("loading");
